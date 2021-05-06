@@ -83,6 +83,21 @@
             }
         };
 
-        Plotly.newPlot('myDiv', data, layout);
+        Plotly.newPlot('myDiv', data, layout)
+        .then(
+            function (gd) {
+                Plotly.toImage(
+                    gd,
+                    {
+                        format: 'svg'
+                    }
+                )
+                .then(
+                    function (url) {
+                        console.log(url);
+                    }
+                );
+            }
+        );
     }
 </script>
