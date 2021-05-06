@@ -8,31 +8,43 @@
 </head>
 
 <body>
-<label for='github_id'>Github ID: </label><input id='github_id'/>
-<button onclick="get()">GET</button>
+<div align="center">
+    <label for='github_id'>Github ID: </label><input id='github_id'/>
+    <button onclick="get()">GET</button>
+</div>
 <div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+<div id="error_not_found" align="center">
+    <h3>404 Not Found!</h3>
+</div>
 </body>
 <script>
+    var error_not_found = $('#error_not_found');
+    var github_id;
+    $(document).ready(function() {
+            error_not_found.hide();
+    });
+
     function get() {
+        github_id = $('#github_id').val();
         $.ajax({
-            'url': "/contribute/" + $('#github_id').val(),
+            'url': "/contribute/" + github_id,
             'type': 'GET',
             'contentType': 'application/json; charset=UTF-8',
             'success': function(data) {
                 plot(data)
             },
-            'error': function(request, status, error) { }
+            'error': function(request, status, error) {
+                error_not_found.show();
+            }
         });
     }
     function plot(contribute) {
-        console.log(contribute)
-        var date_list = []
-        var count_list = []
+        var date_list = [];
+        var count_list = [];
         for (var i=0; i<contribute.length; i++) {
-            date_list.push(contribute[i]['data-date'])
-            count_list.push(contribute[i]['data-count'])
+            date_list.push(contribute[i]['data-date']);
+            count_list.push(contribute[i]['data-count']);
         }
-        console.log(date_list)
         var data = [
             {
                 x: date_list,
@@ -40,6 +52,37 @@
                 type: 'scatter'
             }
         ];
-        Plotly.newPlot('myDiv', data);
+
+        var layout = {
+            title: github_id + "'s Github Contributes",
+            xaxis: {
+                title: 'Contributes',
+                autorange: true,
+                range: [contribute[0]['data-date'], contribute[contribute.length-1]['data-date']],
+                rangeselector: {buttons: [
+                        {
+                            count: 1,
+                            label: '1m',
+                            step: 'month',
+                            stepmode: 'backyard'
+                        },
+                        {
+                            count: 6,
+                            label: '6m',
+                            step: 'month',
+                            stepmode: 'backyard'
+                        },
+                        {step: 'all'}
+                    ]},
+                rangeslider: {range: [contribute[0]['data-date'], contribute[contribute.length-1]['data-date']]},
+                type: 'date'
+            },
+            yaxis: {
+                autorange: true,
+                type: 'linear'
+            }
+        };
+
+        Plotly.newPlot('myDiv', data, layout);
     }
 </script>

@@ -32,20 +32,27 @@ def contribute_calender_crawling(github_id: str):
     try:
         resp = requests.get(f"https://github.com/{github_id}")
     except:
-        return False, None
+        return False, 500, None
 
+    if resp.status_code == 404:
+        return False, 404, None
     if resp.status_code != 200:
-        return False, None
+        return False, 500, None
 
     day_list = BeautifulSoup(resp.text, 'html.parser').find('g').find_all('rect', 'ContributionCalendar-day')
+    if len(day_list) == 0:
+        return False, 500, None
     data_count = list()
 
     for day in day_list:
         data_count.append({'data-count': int(day.get('data-count')), 'data-date': day.get('data-date')})
-    print(data_count)
-    return data_count
+    return True, None, data_count
 
 
 @contribute_blueprint.route('/<string:github_id>', methods=['GET'])
 def get_contribute(github_id):
-    return jsonify(contribute_calender_crawling(github_id))
+    status, status_code, result = contribute_calender_crawling(github_id)
+    if not status:
+        return jsonify({'message': 'Got error!'}), status_code
+    else:
+        return jsonify(result), 200
