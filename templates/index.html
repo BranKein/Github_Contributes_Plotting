@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Github Contributes</title>
+    <!-- Load plotly.js into the DOM -->
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <script src="/static/assets/js/jquery-1.12.2.min.js"></script>
+</head>
+
+<body>
+<label for='github_id'>Github ID: </label><input id='github_id'/>
+<button onclick="get()">GET</button>
+<div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+</body>
+<script>
+    function get() {
+        $.ajax({
+            'url': "/contribute/" + $('#github_id').val(),
+            'type': 'GET',
+            'contentType': 'application/json; charset=UTF-8',
+            'success': function(data) {
+                plot(data)
+            },
+            'error': function(request, status, error) { }
+        });
+    }
+    function plot(contribute) {
+        console.log(contribute)
+        var date_list = []
+        var count_list = []
+        for (var i=0; i<contribute.length; i++) {
+            date_list.push(contribute[i]['data-date'])
+            count_list.push(contribute[i]['data-count'])
+        }
+        console.log(date_list)
+        var data = [
+            {
+                x: date_list,
+                y: count_list,
+                type: 'scatter'
+            }
+        ];
+        Plotly.newPlot('myDiv', data);
+    }
+</script>
