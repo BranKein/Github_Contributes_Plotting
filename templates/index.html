@@ -3,7 +3,7 @@
 <head>
     <title>Github Contributes</title>
     <!-- Load plotly.js into the DOM -->
-    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+    <script src='/static/assets/js/plotly.min.js'></script>
     <script src="/static/assets/js/jquery-1.12.2.min.js"></script>
 </head>
 
@@ -59,22 +59,6 @@
                 title: 'Contributes',
                 autorange: true,
                 range: [contribute[0]['data-date'], contribute[contribute.length-1]['data-date']],
-                rangeselector: {buttons: [
-                        {
-                            count: 1,
-                            label: '1m',
-                            step: 'month',
-                            stepmode: 'backyard'
-                        },
-                        {
-                            count: 6,
-                            label: '6m',
-                            step: 'month',
-                            stepmode: 'backyard'
-                        },
-                        {step: 'all'}
-                    ]},
-                rangeslider: {range: [contribute[0]['data-date'], contribute[contribute.length-1]['data-date']]},
                 type: 'date'
             },
             yaxis: {
@@ -83,21 +67,6 @@
             }
         };
 
-        Plotly.newPlot('myDiv', data, layout)
-        .then(
-            function (gd) {
-                Plotly.toImage(
-                    gd,
-                    {
-                        format: 'svg'
-                    }
-                )
-                .then(
-                    function (url) {
-                        console.log(url);
-                    }
-                );
-            }
-        );
+        Plotly.newPlot('myDiv', data, layout);
     }
 </script>
