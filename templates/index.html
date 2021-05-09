@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <title>Github Contributes</title>
     <!-- Load plotly.js into the DOM -->
@@ -8,6 +8,12 @@
 </head>
 
 <body>
+<div align="center">
+    <h3>Github Contributes Graph</h3>
+</div>
+<div align="center">
+    <p>Github Profile의 contributes 그래프, 일명 잔디라고 불리는 친구의 데이터를 크롤링하여 contributes 데이터를 수집, 히스토그램으로 변경하여 보여주는 페이지입니다.</p>
+</div>
 <div align="center">
     <label for='github_id'>Github ID: </label><input id='github_id'/>
     <button onclick="get()">GET</button>
@@ -45,28 +51,68 @@
             date_list.push(contribute[i]['data-date']);
             count_list.push(contribute[i]['data-count']);
         }
+        var frames = [];
+        for (var i=0; i<contribute.length; i++) {
+            frames[i] = {data: [{x: [], y: []}]};
+            frames[i].data[0].x = date_list.slice(0, i+1);
+            frames[i].data[0].y = count_list.slice(0, i+1);
+        }
+        console.log(frames);
         var data = [
             {
-                x: date_list,
-                y: count_list,
-                type: 'scatter'
+                x: frames[contribute.length-1].data[0].x,
+                y: frames[contribute.length-1].data[0].y,
+                type: 'scatter',
+                fill: 'tozeroy',
+                mode: 'lines',
+                line: {color: 'green'},
             }
         ];
+        console.log(frames[contribute.length-1].data[0].x[0]);
+        console.log(frames[contribute.length-1].data[0].x[contribute.length-1]);
 
         var layout = {
             title: github_id + "'s Github Contributes",
             xaxis: {
                 title: 'Contributes',
                 autorange: true,
-                range: [contribute[0]['data-date'], contribute[contribute.length-1]['data-date']],
+                range: [
+                    frames[contribute.length-1].data[0].x[0],
+                    frames[contribute.length-1].data[0].x[contribute.length-1],
+                ],
                 type: 'date'
             },
             yaxis: {
                 autorange: true,
                 type: 'linear'
-            }
+            },
+            annotations: [{
+                showarrow: false,
+                text: "<b>Let's Coding!</b>",
+                font: {
+                    family: 'Gravitas One',
+                    size: 36,
+                    color: 'black',
+                },
+                xref: 'paper',
+                yref: 'paper',
+                x: 0.5,
+                y: 0.5,
+            }]
         };
 
-        Plotly.newPlot('myDiv', data, layout);
+        Plotly.newPlot('myDiv', data, layout)
+        .then(function () {
+            Plotly.animate('myDiv', frames, {
+                transition: {
+                    duration: 0
+                },
+                frame: {
+                    duration: 20,
+                    redraw: false
+                }
+            })
+        });
     }
 </script>
+</html>
