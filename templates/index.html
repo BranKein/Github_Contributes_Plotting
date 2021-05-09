@@ -8,27 +8,37 @@
 </head>
 
 <body>
-<div align="center">
-    <h3>Github Contributes Graph</h3>
+<div style="bottom: 30px; top: 0px; left: 0px; right: 0px; width: 100%; position: absolute">
+    <div align="center" style="padding-top: 20px;">
+        <h3>Github Contributes Graph</h3>
+    </div>
+    <div align="center">
+        <p>Github Profile의 contributes 그래프, 일명 잔디라고 불리는 친구의 데이터를 크롤링하여</p>
+        <p>contributes 데이터를 수집, 꺾은선 그래프로 변경하여 보여주는 페이지입니다.</p>
+    </div>
+    <div align="center">
+        <label for='github_id'>Github ID: </label><input id='github_id'/>
+        <button onclick="get()">GET</button>
+    </div>
+    <div id='myDiv' align="center" style="padding-right: 10%; padding-left: 10%; width: 80%;"><!-- Plotly chart will be drawn inside this DIV --></div>
+    <div hidden id="how_count" align="end" style="padding-right: 15%; padding-left: 15%; width: 70%;">
+        <a href="https://docs.github.com/en/github/setting-up-and-managing-your-github-profile/why-are-my-contributions-not-showing-up-on-my-profile">
+            How Github count contributes
+        </a>
+    </div>
+    <div hidden id="error_not_found" align="center">
+        <h3>404 Not Found!</h3>
+    </div>
 </div>
-<div align="center">
-    <p>Github Profile의 contributes 그래프, 일명 잔디라고 불리는 친구의 데이터를 크롤링하여 contributes 데이터를 수집, 히스토그램으로 변경하여 보여주는 페이지입니다.</p>
-</div>
-<div align="center">
-    <label for='github_id'>Github ID: </label><input id='github_id'/>
-    <button onclick="get()">GET</button>
-</div>
-<div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
-<div id="error_not_found" align="center">
-    <h3>404 Not Found!</h3>
+<div style="left: 0px; right: 0px; bottom: 0; position: absolute;">
+    <div align="center" style="margin-top: 0;">
+        <p>Copyright © 2021 Yeonhyuk Kim, All rights reserved.</p>
+    </div>
 </div>
 </body>
 <script>
     var error_not_found = $('#error_not_found');
     var github_id;
-    $(document).ready(function() {
-            error_not_found.hide();
-    });
 
     function get() {
         github_id = $('#github_id').val();
@@ -37,7 +47,8 @@
             'type': 'GET',
             'contentType': 'application/json; charset=UTF-8',
             'success': function(data) {
-                plot(data)
+                plot(data);
+                $('#how_count').show();
             },
             'error': function(request, status, error) {
                 error_not_found.show();
@@ -74,7 +85,7 @@
         var layout = {
             title: github_id + "'s Github Contributes",
             xaxis: {
-                title: 'Contributes',
+                title: 'Date',
                 autorange: true,
                 range: [
                     frames[contribute.length-1].data[0].x[0],
@@ -83,6 +94,7 @@
                 type: 'date'
             },
             yaxis: {
+                title: 'Contributes',
                 autorange: true,
                 type: 'linear'
             },
